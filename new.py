@@ -1,28 +1,44 @@
 import phonenumbers
-from phonenumbers import geocoder
-from test import number
+from phonenumbers import timezone, geocoder, carrier
 import folium
+from geopy.geocoders import Nominatim
 
-check_number = phonenumbers.parse(number)
-number_location = geocoder.description_for_number(check_number, "en")
-print(number_location)
+number = input("Enter your number with +__ : ")
 
- 
+phone = phonenumbers.parse(number)
+time = timezone.time_zones_for_number(phone)
+car = carrier.name_for_number(phone, "en")
+reg = geocoder.description_for_number(phone, "en")
 
-from phonenumbers import carrier
-service_provider = phonenumbers.parse(number)
-print(carrier.name_for_number(service_provider, "en"))
+print("Phone Number:", number)
+print("Time Zones:", list(time))
+print("Carrier:", car)
+print("Region:", reg)
 
-from opencage.geocoder import OpenCageGeocode
-geocoder = OpenCageGeocode(Key)
+# Get country name from phone number
+country_code = phonenumbers.region_code_for_number(phone)
+country_name = geocoder.description_for_number(phone, "en")
 
-query = str(number_location)
-results = geocoder.g eocode(query)
+# Geocode the country name to retrieve latitude and longitude
+geolocator = Nominatim(user_agent="phone-locator")
+location = geolocator.geocode(country_name)
 
-lat = results[0]['geometry']['lat']
-lng = results[0]['geometry']['lng']
-print(lat,lng)
+if location is not None:
+    latitude = location.latitude
+    longitude = location.longitude
 
-map_location = folium.Map(location = [lat,lng], zoom_start=9)
-folium.Marker([lat,lng], popup =  number_location).add_to(map_location)
-map_location.save("mylocation.html")
+    # Create a map centered at the location
+    map_center = [latitude, longitude]
+    m = folium.Map(location=map_center, zoom_start=12)
+
+    # Add a marker for the location
+    folium.Marker(
+        location=map_center,
+        popup=number,
+        icon=folium.Icon(color='blue', icon='phone')
+    ).add_to(m)
+
+    # Display the map
+    m.save('map.html')
+else:
+    print("Location not found.")
