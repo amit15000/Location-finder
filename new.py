@@ -4,10 +4,10 @@ from test import number
 import folium
 
 check_number = phonenumbers.parse(number)
-number_locatiob = geocoder.description_for_number(check_number, "en")
+number_location = geocoder.description_for_number(check_number, "en")
 print(number_location)
 
-
+ 
 
 from phonenumbers import carrier
 service_provider = phonenumbers.parse(number)
@@ -17,7 +17,7 @@ from opencage.geocoder import OpenCageGeocode
 geocoder = OpenCageGeocode(Key)
 
 query = str(number_location)
-results = geocoder.geocode(query)
+results = geocoder.g eocode(query)
 
 lat = results[0]['geometry']['lat']
 lng = results[0]['geometry']['lng']
